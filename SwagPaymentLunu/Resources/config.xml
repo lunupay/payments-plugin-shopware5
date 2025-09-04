@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/shopware5/shopware/5.3/engine/Shopware/Components/Plugin/schema/config.xsd">
+    <elements>
+        <element required="true" type="text">
+            <name>appId</name>
+            <label lang="en">App ID</label>
+            <label lang="de">App ID</label>
+        </element>
+        <element required="true" type="text">
+            <name>apiSecret</name>
+            <label lang="en">API Secret</label>
+            <label lang="de">API Secret</label>
+        </element>
+        <element type="boolean">
+            <name>isSandboxEnabled</name>
+            <label lang="en">Enable Sandbox Mode</label>
+            <label lang="de">Sandbox-Modus aktivieren</label>
+        </element>
+    </elements>
+</config>

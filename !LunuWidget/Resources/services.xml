@@ -1,0 +1,31 @@
+<?xml version="1.0" ?>
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+    <services>
+        <service id="swag_payment.payment_service"
+                 class="LunuWidget\Components\PaymentService">
+        </service>
+    </services>
+
+    <elements>
+        <element required="true" type="text">
+            <name>appID</name>
+            <label>App ID</label>
+            <description>Enter your App ID</description>
+        </element>
+
+        <element required="true" type="text">
+            <name>apiSecret</name>
+            <label>API Secret</label>
+            <description>Enter your App ID</description>
+        </element>
+
+        <element type="boolean">
+            <name>sandboxMode</name>
+            <label>Sandbox mode</label>
+            <description>Turn on for sandbox mode testing</description>
+            <value>false</value>
+        </element>
+    </elements>
+</container>
