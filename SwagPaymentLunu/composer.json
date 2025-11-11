@@ -1,0 +1,40 @@
+{
+    "name": "lunu/shopware5-payment-plugin",
+    "description": "Lunu Cryptocurrency Payment Plugin for Shopware 5",
+    "version": "1.0.0",
+    "type": "shopware-plugin",
+    "keywords": ["shopware", "payment", "cryptocurrency", "bitcoin", "ethereum", "lunu"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Lunu Solutions GmbH",
+            "email": "support@lunu.io",
+            "homepage": "https://lunu.io"
+        }
+    ],
+    "require": {
+        "php": ">=7.0.0",
+        "ext-curl": "*",
+        "ext-json": "*"
+    },
+    "extra": {
+        "installer-name": "SwagPaymentLunu",
+        "plugin-class": "SwagPaymentLunu\\SwagPaymentLunu",
+        "copyright": "(c) Lunu Solutions GmbH",
+        "label": {
+            "en": "Lunu Cryptocurrency Payment",
+            "de": "Lunu Kryptowährungszahlung"
+        },
+        "description": {
+            "en": "Accept cryptocurrency payments easily and securely with Lunu Widget. Support for Bitcoin, Ethereum, and other major cryptocurrencies.",
+            "de": "Akzeptieren Sie Kryptowährungszahlungen einfach und sicher mit Lunu Widget. Unterstützung für Bitcoin, Ethereum und andere wichtige Kryptowährungen."
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "SwagPaymentLunu\\": ""
+        }
+    }
+}
+
+

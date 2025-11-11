@@ -27,10 +27,10 @@ class Shopware_Controllers_Frontend_PaymentExample extends Shopware_Controllers_
         $is_sandbox_enabled = $config['isSandboxEnabled'];
         $this->appId = $config['appId'];
         $this->apiSecret = $config['apiSecret'];
-        $this->widgetVersion = $is_sandbox_enabled ? 'testing' : 'alpha';
-        $this->apiUrl = 'https://' . ($is_sandbox_enabled ? 'api.testing' : 'api') . '.lunu.io/api/v1/payments/';
+        $this->widgetVersion = $is_sandbox_enabled ? 'sandbox' : 'alpha';
+        $this->apiUrl = 'https://' . ($is_sandbox_enabled ? 'api.sandbox' : 'api') . '.lunupay.com/api/v1/payments/';
         $this->auth_token = base64_encode($this->appId . ':' . $this->apiSecret);
-        $this->widgetURL = 'https://widget' . ($is_sandbox_enabled ? '.testing' : '') . '.lunu.io/#/?';
+        $this->widgetURL = 'https://widget' . ($is_sandbox_enabled ? '.sandbox' : '') . '.lunupay.com/#/?';
     }
 
 
@@ -45,59 +45,95 @@ class Shopware_Controllers_Frontend_PaymentExample extends Shopware_Controllers_
 
 
     public function directAction() {
-        $order = Shopware()->Modules()->Order();
-        $orderNumber = $order->sGetOrderNumber();
-        $currency = Shopware()->Shop()->getCurrency()->getCurrency();
-        $user = $this->getUser();
-        $billing = $user['billingaddress'];
-        $email = $user['additional']['user']['email'];
-        $description = 'Order #' . $orderNumber;
-        $headers = $this->getHeaders($orderNumber);
-        $router = $this->Front()->Router();
+        try {
+            $order = Shopware()->Modules()->Order();
+            $orderNumber = $order->sGetOrderNumber();
+            $currency = Shopware()->Shop()->getCurrency()->getCurrency();
+            $user = $this->getUser();
+            $billing = $user['billingaddress'];
+            $email = $user['additional']['user']['email'];
+            $description = 'Order #' . $orderNumber;
+            $router = $this->Front()->Router();
 
-        $requestParams = array(
-            'shop_order_id' => $orderNumber,
-            'email' => $email,
-            'amount' => $this->getAmount(),
-            'client_currency' => $currency,
-            'description' => $description,
-            'expires' => date("c", time() + 3600)
-        );
+            // Validate required data
+            if (empty($orderNumber) || empty($email)) {
+                throw new \Exception('Missing required order information');
+            }
 
-        $data = $this->lunuRequest("create", $requestParams, $this->getHeaders($order_id));
-        $response = $data['response'];
-        $confirmation_token = $response['confirmation_token'];
+            $requestParams = array(
+                'shop_order_id' => $orderNumber,
+                'email' => filter_var($email, FILTER_SANITIZE_EMAIL),
+                'amount' => $this->getAmount(),
+                'client_currency' => $currency,
+                'description' => $description,
+                'expires' => date("c", time() + 3600)
+            );
 
-        Shopware()->Session()->orderNumber = $orderNumber;
+            $data = $this->lunuRequest("create", $requestParams, $this->getHeaders($orderNumber));
+            
+            if (!isset($data['response']['confirmation_token']) || !isset($data['response']['id'])) {
+                throw new \Exception('Invalid response from payment provider');
+            }
+            
+            $response = $data['response'];
+            $confirmation_token = $response['confirmation_token'];
 
-        $redirectUrl = ($this->widgetURL .
-            http_build_query(array(
-                'action' => 'select',
-                'token' => $confirmation_token,
-                'success' => $router->assemble(['action' => 'return', 'forceSecure' => true, 'orderID' => $response['id']]),
-                'cancel' => $router->assemble(['action' => 'cancel', 'forceSecure' => true])
-            )));
-        $this->redirect($redirectUrl);
+            Shopware()->Session()->orderNumber = $orderNumber;
+
+            $redirectUrl = ($this->widgetURL .
+                http_build_query(array(
+                    'action' => 'select',
+                    'token' => $confirmation_token,
+                    'success' => $router->assemble(['action' => 'return', 'forceSecure' => true, 'orderID' => $response['id']]),
+                    'cancel' => $router->assemble(['action' => 'cancel', 'forceSecure' => true])
+                )));
+            $this->redirect($redirectUrl);
+        } catch (\Exception $e) {
+            Shopware()->Container()->get('pluginlogger')->error('Lunu Payment Error: ' . $e->getMessage());
+            $this->forward('cancel');
+        }
     }
 
 
     public function returnAction() {
-        $request = $this->Request();
-        $orderId = $request->getParam('orderID');
-        $orderNumber = Shopware()->Session()->orderNumber;
-        $token = $this->createPaymentToken($this->getAmount(), $this->getUserID());
+        try {
+            $request = $this->Request();
+            $orderId = $request->getParam('orderID');
+            $orderNumber = Shopware()->Session()->orderNumber;
+            
+            if (empty($orderId) || empty($orderNumber)) {
+                throw new \Exception('Missing order information');
+            }
+            
+            $token = $this->createPaymentToken($this->getAmount(), $this->getUserID());
 
-        $data = $this->lunuRequest("get/" . $orderId, null, $this->getHeaders($orderNumber));
-        $response = $data['response'];
+            $data = $this->lunuRequest("get/" . $orderId, null, $this->getHeaders($orderNumber));
+            
+            if (!isset($data['response'])) {
+                throw new \Exception('Invalid response from payment provider');
+            }
+            
+            $response = $data['response'];
 
-        if($response['status'] === 'paid' && $response['shop_order_id'] === $orderNumber) {
-            $this->saveOrder(
-                $orderId,
-                $token,
-                self::PAYMENTSTATUSPAID
-            );
-            $this->redirect(['controller' => 'checkout', 'action' => 'finish']);
-        } else {
+            if($response['status'] === 'paid' && $response['shop_order_id'] === $orderNumber) {
+                $this->saveOrder(
+                    $orderId,
+                    $token,
+                    self::PAYMENTSTATUSPAID
+                );
+                $this->redirect(['controller' => 'checkout', 'action' => 'finish']);
+            } else {
+                Shopware()->Container()->get('pluginlogger')->warning(
+                    'Lunu Payment not completed',
+                    [
+                        'status' => $response['status'] ?? 'unknown',
+                        'order_id' => $orderId
+                    ]
+                );
+                $this->forward('cancel');
+            }
+        } catch (\Exception $e) {
+            Shopware()->Container()->get('pluginlogger')->error('Lunu Payment Return Error: ' . $e->getMessage());
             $this->forward('cancel');
         }
     }
@@ -109,7 +145,8 @@ class Shopware_Controllers_Frontend_PaymentExample extends Shopware_Controllers_
 
 
     private function createPaymentToken($amount, $customerId) {
-        return md5(implode('|', [$amount, $customerId]));
+        $data = implode('|', [$amount, $customerId, $this->apiSecret]);
+        return hash_hmac('sha256', $data, $this->apiSecret);
     }
 
 
@@ -130,9 +167,23 @@ class Shopware_Controllers_Frontend_PaymentExample extends Shopware_Controllers_
         $responseBody = curl_exec($ch);
         $responseHttpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
+        
         if ($responseHttpCode !== 200) {
-
+            $error = json_decode($responseBody, true);
+            $errorMessage = isset($error['message']) ? $error['message'] : 'Payment provider error';
+            
+            Shopware()->Container()->get('pluginlogger')->error(
+                'Lunu API Error',
+                [
+                    'method' => $method,
+                    'status_code' => $responseHttpCode,
+                    'response' => $responseBody
+                ]
+            );
+            
+            throw new \Exception('Payment error: ' . $errorMessage);
         }
+        
         return json_decode($responseBody, true);
     }
 

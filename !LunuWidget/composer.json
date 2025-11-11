@@ -1,0 +1,38 @@
+{
+    "name": "lunu/shopware5-widget-gateway",
+    "description": "Lunu Widget Gateway Payment Plugin for Shopware 5",
+    "version": "1.0.0",
+    "type": "shopware-plugin",
+    "keywords": ["shopware", "payment", "gateway", "cryptocurrency", "lunu"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Lunu Solutions GmbH",
+            "email": "support@lunu.io",
+            "homepage": "https://lunu.io"
+        }
+    ],
+    "require": {
+        "php": ">=7.0.0"
+    },
+    "extra": {
+        "installer-name": "LunuWidget",
+        "plugin-class": "LunuWidget\\LunuWidget",
+        "copyright": "(c) Lunu Solutions GmbH",
+        "label": {
+            "en": "Lunu Widget (Gateway)",
+            "de": "Lunu Widget (Gateway)"
+        },
+        "description": {
+            "en": "Gateway payment integration for Lunu cryptocurrency payment service. Provides secure cryptocurrency payment processing.",
+            "de": "Gateway-Zahlungsintegration für den Lunu-Kryptowährungszahlungsdienst. Bietet sichere Verarbeitung von Kryptowährungszahlungen."
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "LunuWidget\\": ""
+        }
+    }
+}
+
+

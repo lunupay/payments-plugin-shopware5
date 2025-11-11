@@ -2,12 +2,34 @@
 <plugin xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/shopware5/shopware/5.3/engine/Shopware/Components/Plugin/schema/plugin.xsd">
 
-    <label lang="en">Lunu Widget</label>
-    <label lang="de">Lunu Widget</label>
+    <label lang="en">Lunu Widget (Gateway)</label>
+    <label lang="de">Lunu Widget (Gateway)</label>
 
-    <version>0.0.1</version>
+    <version>1.0.0</version>
     <copyright>(c) Lunu Solutions GmbH</copyright>
+    <license>MIT</license>
+    <link>https://lunu.io</link>
     <author>Lunu Solutions GmbH</author>
 
     <compatibility minVersion="5.2.13"/>
+
+    <description lang="en">Gateway payment integration for Lunu cryptocurrency payment service. Provides secure cryptocurrency payment processing.</description>
+    <description lang="de">Gateway-Zahlungsintegration für den Lunu-Kryptowährungszahlungsdienst. Bietet sichere Verarbeitung von Kryptowährungszahlungen.</description>
+
+    <changelog version="1.0.0">
+        <changes lang="en">
+            - Initial release
+            - Gateway payment method support
+            - Secure token-based payment verification
+            - Improved error handling
+            - Production-ready code
+        </changes>
+        <changes lang="de">
+            - Erste Veröffentlichung
+            - Unterstützung für Gateway-Zahlungsmethode
+            - Sichere tokenbasierte Zahlungsüberprüfung
+            - Verbesserte Fehlerbehandlung
+            - Produktionsreifer Code
+        </changes>
+    </changelog>
 </plugin>

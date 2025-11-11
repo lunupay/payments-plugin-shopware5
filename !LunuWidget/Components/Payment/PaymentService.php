@@ -31,10 +31,12 @@ class PaymentService
     /**
      * @param float $amount
      * @param int $customerId
+     * @param string $secret
      * @return string
      */
-    public function createPaymentToken($amount, $customerId)
+    public function createPaymentToken($amount, $customerId, $secret = '')
     {
-        return md5(implode('|', [$amount, $customerId]));
+        $data = implode('|', [$amount, $customerId, $secret]);
+        return hash_hmac('sha256', $data, $secret ?: 'default_secret_key');
     }
 }

@@ -2,14 +2,36 @@
 <plugin xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/shopware5/shopware/5.3/engine/Shopware/Components/Plugin/schema/plugin.xsd">
 
-    <label lang="en">Lunu Widget</label>
-    <label lang="de">Lunu Widget</label>
+    <label lang="en">Lunu Cryptocurrency Payment</label>
+    <label lang="de">Lunu Kryptowährungszahlung</label>
 
-    <version>0.0.25</version>
+    <version>1.0.0</version>
     <copyright>(c) Lunu Solutions GmbH</copyright>
+    <license>MIT</license>
+    <link>https://lunu.io</link>
     <author>Lunu Solutions GmbH</author>
 
     <compatibility minVersion="5.2.13"/>
+
+    <description lang="en">Accept cryptocurrency payments easily and securely with Lunu Widget. Support for Bitcoin, Ethereum, and other major cryptocurrencies.</description>
+    <description lang="de">Akzeptieren Sie Kryptowährungszahlungen einfach und sicher mit Lunu Widget. Unterstützung für Bitcoin, Ethereum und andere wichtige Kryptowährungen.</description>
+
+    <changelog version="1.0.0">
+        <changes lang="en">
+            - Initial release
+            - Support for cryptocurrency payments via Lunu Widget
+            - Secure payment processing with HMAC-SHA256
+            - Sandbox mode
+            - Comprehensive error handling and logging
+        </changes>
+        <changes lang="de">
+            - Erste Veröffentlichung
+            - Unterstützung für Kryptowährungszahlungen über Lunu Widget
+            - Sichere Zahlungsabwicklung mit HMAC-SHA256
+            - Sandbox-Modus zum Testen
+            - Umfassende Fehlerbehandlung und Protokollierung
+        </changes>
+    </changelog>
 
     <configuration>
         <xmlfile>Resources/config.xml</xmlfile>
