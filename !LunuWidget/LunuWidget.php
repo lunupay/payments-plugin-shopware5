@@ -20,15 +20,15 @@ class LunuWidget extends Plugin
         $installer = $this->container->get('shopware.plugin_payment_installer');
 
         $options = [
-            'name' => 'example_payment_invoice',
-            'description' => 'Example payment method invoice',
-            'action' => 'PaymentExample',
+            'name' => 'lunu_widget_payment',
+            'description' => 'Lunu Widget - Cryptocurrency Payment',
+            'action' => 'Payment',
             'active' => 0,
             'position' => 0,
             'additionalDescription' =>
-                '<img src="http://your-image-url"/>'
+                '<img src="https://lunu.io/favicons/favicon.ico"/>'
                 . '<div id="payment_desc">'
-                . '  Pay save and secured by invoice with our example payment provider.'
+                . '  Pay securely with cryptocurrency using Lunu Widget.'
                 . '</div>'
         ];
         $installer->createOrUpdate($context->getPlugin(), $options);
