@@ -9,7 +9,6 @@ class Shopware_Controllers_Frontend_PaymentExample extends Shopware_Controllers_
     private string $appId;
     private string $apiSecret;
     private string $apiUrl;
-    private string $widgetVersion;
     private string $auth_token;
     private string $widgetURL;
 
@@ -27,10 +26,9 @@ class Shopware_Controllers_Frontend_PaymentExample extends Shopware_Controllers_
         $is_sandbox_enabled = $config['isSandboxEnabled'];
         $this->appId = $config['appId'];
         $this->apiSecret = $config['apiSecret'];
-        $this->widgetVersion = $is_sandbox_enabled ? 'sandbox' : 'alpha';
-        $this->apiUrl = 'https://' . ($is_sandbox_enabled ? 'api.sandbox' : 'api') . '.lunupay.com/api/v1/payments/';
+        $this->apiUrl = 'https://' . ($is_sandbox_enabled ? 'api.sandbox' : 'api') . '.lunupay.com/legacy-api/v1/payments/';
         $this->auth_token = base64_encode($this->appId . ':' . $this->apiSecret);
-        $this->widgetURL = 'https://widget' . ($is_sandbox_enabled ? '.sandbox' : '') . '.lunupay.com/#/?';
+        $this->widgetURL = 'https://widget' . ($is_sandbox_enabled ? '.sandbox' : '') . '.lunupay.com/?';
     }
 
 
@@ -71,19 +69,17 @@ class Shopware_Controllers_Frontend_PaymentExample extends Shopware_Controllers_
 
             $data = $this->lunuRequest("create", $requestParams, $this->getHeaders($orderNumber));
             
-            if (!isset($data['response']['confirmation_token']) || !isset($data['response']['id'])) {
+            if (!isset($data['response']['id'])) {
                 throw new \Exception('Invalid response from payment provider');
             }
             
             $response = $data['response'];
-            $confirmation_token = $response['confirmation_token'];
 
             Shopware()->Session()->orderNumber = $orderNumber;
 
             $redirectUrl = ($this->widgetURL .
                 http_build_query(array(
-                    'action' => 'select',
-                    'token' => $confirmation_token,
+                    'order_id' => $response['id'],
                     'success' => $router->assemble(['action' => 'return', 'forceSecure' => true, 'orderID' => $response['id']]),
                     'cancel' => $router->assemble(['action' => 'cancel', 'forceSecure' => true])
                 )));

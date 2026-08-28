@@ -128,11 +128,11 @@ Logs are available in:
 ## API Endpoints
 
 ### Production
-- API: `https://api.lunupay.com/api/v1/`
+- API: `https://api.lunupay.com/legacy-api/v1/`
 - Widget: `https://widget.lunupay.com/`
 
 ### Sandbox
-- API: `https://api.sandbox.lunupay.com/api/v1/`
+- API: `https://api.sandbox.lunupay.com/legacy-api/v1/`
 - Widget: `https://widget.sandbox.lunupay.com/`
 
 ## Support
